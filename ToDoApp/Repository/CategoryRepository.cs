@@ -22,7 +22,7 @@ namespace ToDoApp.Repository
                 connection.Open();
 
                 SqlCommand cmd = new SqlCommand(query, connection);
-                cmd.Parameters.AddWithValue("CategoryId", category.Name);
+                cmd.Parameters.AddWithValue("Name", category.Name);
 
                 cmd.ExecuteNonQuery();
                 connection.Close();
