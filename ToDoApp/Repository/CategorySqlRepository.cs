@@ -6,10 +6,10 @@ using ToDoApp.Services;
 
 namespace ToDoApp.Repository
 {
-    public class CategoryRepository : ICategoryRepository
+    public class CategorySqlRepository : ICategoryRepository
     {
         private readonly DapperContext _context;
-        public CategoryRepository(DapperContext context)
+        public CategorySqlRepository(DapperContext context)
         {
             _context = context;
         }

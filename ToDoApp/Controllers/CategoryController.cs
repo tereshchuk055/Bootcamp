@@ -1,20 +1,19 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using ToDoApp.Interfaces;
 using ToDoApp.Models;
-using ToDoApp.Repository;
+using ToDoApp.Services;
 using ToDoApp.ViewModels;
 
 namespace ToDoApp.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly ICategoryRepository _categoryRepository;
+        private readonly CategoryRepositoryFactory _categoryRepository;
         private readonly IMapper _mapper;
 
-        public CategoryController(ICategoryRepository categoryRepo, IMapper mapper)
+        public CategoryController(CategoryRepositoryFactory repositoryFactory, IMapper mapper)
         {
-            _categoryRepository = categoryRepo;
+            _categoryRepository = repositoryFactory;
             _mapper = mapper;   
         }
 
@@ -25,7 +24,7 @@ namespace ToDoApp.Controllers
             {
                 try
                 {
-                    _categoryRepository.Add(_mapper.Map<CategoryDto>(createCategoryViewModel));
+                    _categoryRepository.GetRepository().Add(_mapper.Map<CategoryDto>(createCategoryViewModel));
                 }
                 catch (Exception ex) { }
             }
@@ -35,7 +34,7 @@ namespace ToDoApp.Controllers
         [HttpPost]
         public RedirectResult Delete(CategoryByIdViewModel deleteCategoryViewModel)
         {
-            _categoryRepository.Delete(deleteCategoryViewModel.Id);
+            _categoryRepository.GetRepository().Delete(deleteCategoryViewModel.Id);
             return Redirect("/");
         }
 

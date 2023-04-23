@@ -9,14 +9,12 @@
     <link rel="stylesheet" href="~/ToDoApp.styles.css" asp-append-version="true" />
 </head>
 <body class="bg-dark text-light">
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
-    <div class="container">
-        @Html.Partial("_Forms")
-    </div>    
+    <main role="main" class="pb-3">
+        @RenderBody()
+        <div class="container">
+            @Html.Partial("_Forms")
+        </div>
+    </main>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>

@@ -1,19 +1,19 @@
 ﻿using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
-using ToDoApp.Interfaces;
 using ToDoApp.Models;
+using ToDoApp.Services;
 using ToDoApp.ViewModels;
 
 namespace ToDoApp.Controllers
 {
     public class TaskController : Controller
     {
-        private readonly ITaskRepository _taskRepository;
+        private readonly TaskRepositoryFactory _taskRepository;
         private readonly IMapper _mapper;
 
-        public TaskController(ITaskRepository taskRepo, IMapper mapper)
+        public TaskController(TaskRepositoryFactory taskRepository, IMapper mapper)
         {
-            _taskRepository = taskRepo;
+            _taskRepository = taskRepository;
             _mapper = mapper;
         }
 
@@ -24,7 +24,7 @@ namespace ToDoApp.Controllers
             {
                 try
                 {
-                    _taskRepository.Add(_mapper.Map<TaskDto>(createTaskViewModel));
+                    _taskRepository.GetRepository().Add(_mapper.Map<TaskDto>(createTaskViewModel));
                 }
                 catch (Exception ex) { }
             }
@@ -34,14 +34,14 @@ namespace ToDoApp.Controllers
         [HttpPost]
         public RedirectResult Delete(DeleteTaskViewModel deleteTaskViewModel)
         {
-            _taskRepository.Delete(deleteTaskViewModel.Id);
+            _taskRepository.GetRepository().Delete(deleteTaskViewModel.Id);
             return Redirect("/");
         }
         
         [HttpPost]
         public RedirectResult ChangeCompleted(ChangeCompletedStateViewModel changeCompletedStateViewModel)
         {
-            _taskRepository.ChangeCompletedState(changeCompletedStateViewModel.Id, changeCompletedStateViewModel.IsCompleted);
+            _taskRepository.GetRepository().ChangeCompletedState(changeCompletedStateViewModel.Id, changeCompletedStateViewModel.IsCompleted);
             return Redirect("/");
         }
     }

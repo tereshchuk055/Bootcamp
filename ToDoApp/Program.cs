@@ -7,8 +7,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddSingleton<DapperContext>();
-builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-builder.Services.AddScoped<ICategoryRepository, CategoryRepository>();
+builder.Services.AddSingleton<ChosenRepositoryService>();
+builder.Services.AddScoped<CategoryRepositoryFactory>();
+builder.Services.AddScoped<TaskRepositoryFactory>();
+
+//builder.Services.AddScoped<ITaskRepository, TaskSqlRepository>();
+//builder.Services.AddScoped<ICategoryRepository, CategorySqlRepository>();
+
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 var app = builder.Build();

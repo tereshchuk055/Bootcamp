@@ -7,10 +7,10 @@ using ToDoApp.Services;
 
 namespace ToDoApp.Repository
 {
-    public class TaskRepository : ITaskRepository
+    public class TaskSqlRepository : ITaskRepository
     {
         private readonly DapperContext _context;
-        public TaskRepository(DapperContext context)
+        public TaskSqlRepository(DapperContext context)
         {
             _context = context;
         }
