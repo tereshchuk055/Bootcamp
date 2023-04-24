@@ -1,3 +1,5 @@
-# Check ToDoApp Folder
+## ToDoApp project is located in ToDoApp Folder
+UPD: Repository selecting option was added.
 
-![image](https://user-images.githubusercontent.com/128145450/232465630-b0d6c4a0-0542-44da-9013-e2989f370c60.png)
+![image](https://user-images.githubusercontent.com/128145450/233869967-abc21a80-dc02-4918-a57c-cad525ddaed7.png)
+
