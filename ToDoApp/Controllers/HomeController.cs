@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using ToDoApp.ViewModels;
 using ToDoApp.Services;
+using ToDoApp.Storage;
 
 namespace ToDoApp.Controllers
 {
@@ -9,21 +11,39 @@ namespace ToDoApp.Controllers
     {
         private readonly CategoryRepositoryFactory _categoryRepository;
         private readonly TaskRepositoryFactory _taskRepository;
-        private readonly ChosenRepositoryService _storageType;
+        private StorageType _storageType;
 
-        public HomeController(TaskRepositoryFactory taskRepository, CategoryRepositoryFactory categoryRepository, ChosenRepositoryService repositoryService)
+        public HomeController(TaskRepositoryFactory taskRepository, CategoryRepositoryFactory categoryRepository)
         {
             _taskRepository = taskRepository;
             _categoryRepository = categoryRepository;
-            _storageType = repositoryService;
+            _storageType = StorageType.Sql;
         }
 
         public IActionResult Index()
         {
+            if(!Enum.TryParse(HttpContext.Request.Cookies["StorageType"], out _storageType))
+            {
+                _storageType = StorageType.Sql;
+                HttpContext.Response.Cookies.Append("StorageType", StorageType.Sql.ToString());
+            }
+
+            List<SelectListItem> storageTypes = new List<SelectListItem>();
+            foreach (var type in Enum.GetNames(typeof(StorageType))) 
+            {
+                storageTypes.Add( new SelectListItem
+                {
+                    Value = type.ToString(),
+                    Text = type.ToString().ToUpper(),
+                    Selected = type == _storageType.ToString()
+                });
+            }
+
             var vm = new HomeViewModel()
             {
-                Tasks = _taskRepository.GetRepository().Get(),
-                Categories = _categoryRepository.GetRepository().Get()
+                Tasks = _taskRepository.GetRepository(_storageType).Get(),
+                Categories = _categoryRepository.GetRepository(_storageType).Get(),
+                Storages = storageTypes
             };
             return View(vm);
         }
@@ -31,10 +51,28 @@ namespace ToDoApp.Controllers
         [HttpPost]
         public IActionResult Sort(CategoryByIdViewModel categoryByIdViewModel)
         {
+            if (!Enum.TryParse(HttpContext.Request.Cookies["StorageType"], out _storageType))
+            {
+                _storageType = StorageType.Sql;
+                HttpContext.Response.Cookies.Append("StorageType", StorageType.Sql.ToString());
+            }
+
+            List<SelectListItem> storageTypes = new List<SelectListItem>();
+            foreach (var type in Enum.GetNames(typeof(StorageType)))
+            {
+                storageTypes.Add(new SelectListItem
+                {
+                    Value = type.ToString(),
+                    Text = type.ToString().ToUpper(),
+                    Selected = type == _storageType.ToString()
+                });
+            }
+
             var vm = new HomeViewModel()
             {
-                Tasks = _taskRepository.GetRepository().GetByCategory(categoryByIdViewModel.Id),
-                Categories = _categoryRepository.GetRepository().Get()
+                Tasks = _taskRepository.GetRepository(_storageType).GetByCategory(categoryByIdViewModel.Id),
+                Categories = _categoryRepository.GetRepository(_storageType).Get(),
+                Storages = storageTypes
             };
             return View("Index", vm);
         }
@@ -42,7 +80,8 @@ namespace ToDoApp.Controllers
         [HttpPost]
         public RedirectResult ChangeRepository(ChangeRepositoryViewModel changeRepositoryViewModel) 
         {
-            _storageType.SetStorageType(changeRepositoryViewModel.StorageType);
+            HttpContext.Response.Cookies.Append("StorageType", changeRepositoryViewModel.StorageType.ToString());
+            
             return Redirect("/");
         }
     }

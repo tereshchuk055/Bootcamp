@@ -1,4 +1,5 @@
-﻿using ToDoApp.Models;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using ToDoApp.Models;
 
 namespace ToDoApp.ViewModels
 {
@@ -9,5 +10,6 @@ namespace ToDoApp.ViewModels
 
         public CreateTaskViewModel CreateTaskViewModel { get; set; }
         public ChangeCompletedStateViewModel ChangeCompletedStateViewModel { get; set; }
+        public List<SelectListItem> Storages { get; set; }
     }
 }

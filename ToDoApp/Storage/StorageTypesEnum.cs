@@ -1,4 +1,4 @@
-﻿namespace ToDoApp.Enums
+﻿namespace ToDoApp.Storage
 {
     public enum StorageType
     {

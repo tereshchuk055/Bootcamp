@@ -4,15 +4,15 @@ using ToDoApp.Services;
 
 namespace ToDoApp.Services
 {
-    public class DapperContext
+    public class DbContext
     {
         private readonly string _connectionString;
         private readonly string _storagePath;
 
-        public DapperContext(IConfiguration config)
+        public DbContext(IConfiguration config)
         {
-            _connectionString = config.GetConnectionString("DefaultConnection");
-            _storagePath = config.GetValue<string>("XmlStoragePath");
+            _connectionString = config.GetConnectionString("DefaultConnection") ?? throw new Exception("Failed to connect to Database");
+            _storagePath = config.GetValue<string>("XmlStoragePath") ?? throw new Exception("Failed to connect to Database");
         }
 
         public SqlConnection GetConnection() => new SqlConnection(_connectionString);

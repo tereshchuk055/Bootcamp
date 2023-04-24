@@ -1,0 +1,22 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ToDoAppDB>
+  <Tasks>
+    <Task>
+      <Id>1</Id>
+      <Name>TestTask1</Name>
+      <CategoryId>0</CategoryId>
+      <Deadline>2023-04-25T01:21:00</Deadline>
+      <IsCompleted>false</IsCompleted>
+    </Task>
+  </Tasks>
+  <Categories>
+    <Category>
+      <Id>0</Id>
+      <Name>test1</Name>
+    </Category>
+    <Category>
+      <Id>1</Id>
+      <Name>test2</Name>
+    </Category>
+  </Categories>
+</ToDoAppDB>

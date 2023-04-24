@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ToDoApp.Enums;
+using ToDoApp.Storage;
 
 namespace ToDoApp.ViewModels
 {

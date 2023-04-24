@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Xml.Linq;
-using ToDoApp.Interfaces;
 using ToDoApp.Models;
 using ToDoApp.Services;
 
@@ -9,39 +9,40 @@ namespace ToDoApp.Repository
     public class TaskXmlRepository : ITaskRepository
     {
         private XDocument _document;
+        private IEnumerable<XElement> _tasks;
         private readonly string _storagePath;
 
-        public TaskXmlRepository(DapperContext context)
+        public TaskXmlRepository(DbContext context)
         {
             _storagePath = context.GetStoragePath();
+            _document = new XDocument();
+            _tasks = Enumerable.Empty<XElement>();
         }
 
         public void Add(TaskDto task)
         {
             _document = XDocument.Load(_storagePath);
+            _tasks = _document.Root?.Element("Tasks")?.Elements("Task") ?? Enumerable.Empty<XElement>();
+            int nextId = 0;
 
-            int nextId;
-            try 
-            {
-                nextId = (int)((XElement)_document.Root
-                      .Element("Tasks")
-                      .LastNode)
-                      .Element("Id") + 1;
-            }
-            catch(Exception e) 
+            if (_tasks.Any() && !int.TryParse(_tasks.Last<XElement>().FirstNode?.ToString(), out nextId))
             {
                 nextId = 0;
             }
-            
-            XElement taskElement = new XElement("Task",
-                new XElement("Id", nextId),
-                new XElement("Name", task.Name),
-                new XElement("CategoryId", task.CategoryId),
-                new XElement("Deadline", task.Deadline),
-                new XElement("IsCompleted", false)
-                ); 
-            
-            _document.Root.Element("Tasks").Add(taskElement);
+            else
+            {
+                ++nextId;
+            }
+
+            XElement taskElement = new("Task",
+            new XElement("Id", nextId),
+            new XElement("Name", task.Name),
+            new XElement("CategoryId", task.CategoryId),
+            new XElement("Deadline", task.Deadline),
+            new XElement("IsCompleted", false)
+            );
+
+            _document.Root?.Element("Tasks")?.Add(taskElement);
             _document.Save(_storagePath);
         }
 
@@ -49,11 +50,12 @@ namespace ToDoApp.Repository
         {
             _document = XDocument.Load(_storagePath);
 
-            XElement taskElement = _document.Root
-                .Element("Tasks")
-                .Elements("Task")
+            var taskElement = 
+                _document.Root
+                ?.Element("Tasks")
+                ?.Elements("Task")
                 .Where(task => (int)task.Element("Id") == id)
-                .FirstOrDefault();
+                .FirstOrDefault() ?? null;
 
             if (taskElement != null)
             {
@@ -65,16 +67,14 @@ namespace ToDoApp.Repository
         public void Delete(int id)
         {
             _document = XDocument.Load(_storagePath);
+            _tasks = _document.Root?.Element("Tasks")?.Elements("Task") ?? Enumerable.Empty<XElement>();
 
-            XElement taskElement = _document.Root
-                .Element("Tasks")
-                .Elements("Task")
-                .Where(task => (int)task.Element("Id") == id)
-                .FirstOrDefault();
-
-            if (taskElement != null)
+            if (_tasks is not null && _tasks.Any())
             {
-                taskElement.Remove();
+                _tasks
+                .Where(task => int.TryParse(task?.Element("Id")?.Value, out int value) && value == id)
+                .Remove();
+
                 _document.Save(_storagePath);
             }
         }
@@ -82,43 +82,38 @@ namespace ToDoApp.Repository
         public List<TaskDto> Get()
         {
             _document = XDocument.Load(_storagePath);
-            List<TaskDto> tasks = new List<TaskDto>();
+            _tasks = _document.Root?.Element("Tasks")?.Elements("Task") ?? Enumerable.Empty<XElement>();
 
-            tasks.AddRange(_document.Root.Element("Tasks")
-                    .Elements("Task")
-                    .Where(task => (bool)task.Element("IsCompleted") == false)
-                    .Select(task => new TaskDto 
-                    {
-                        Id = (int)task.Element("Id"),
-                        Name = (string)task.Element("Name"),
-                        Deadline = (DateTime)task.Element("Deadline"),
-                        IsCompleted = (bool)task.Element("IsCompleted")
-                    }).ToList());
-            tasks.AddRange(_document.Root.Element("Tasks")
-                    .Elements("Task")
-                    .Where(task => (bool)task.Element("IsCompleted") == true)
+            if (_tasks is not null && _tasks.Any())
+            {
+                return 
+                    _tasks
                     .Select(task => new TaskDto
                     {
                         Id = (int)task.Element("Id"),
                         Name = (string)task.Element("Name"),
                         Deadline = (DateTime)task.Element("Deadline"),
                         IsCompleted = (bool)task.Element("IsCompleted")
-                    }).ToList());
-
-            return tasks;
-
+                    })
+                    .OrderBy(o => o.IsCompleted)
+                    .ToList();
+            }
+            else
+            {
+                return new List<TaskDto>();
+            }
         }
 
         public List<TaskDto> GetByCategory(int categoryId)
         {
             _document = XDocument.Load(_storagePath);
-            List<TaskDto> tasks = new List<TaskDto>();
+            _tasks = _document.Root?.Element("Tasks")?.Elements("Task") ?? Enumerable.Empty<XElement>();
 
-            tasks.AddRange(_document.Root
-               .Element("Tasks")
-               .Elements("Task")
+            if (_tasks is not null && _tasks.Any())
+            {
+                return 
+                _tasks
                .Where(task => (int)task.Element("CategoryId") == categoryId)
-               .Where(task => (bool)task.Element("IsCompleted") == false)
                .Select(task => new TaskDto
                {
                    Id = (int)task.Element("Id"),
@@ -126,23 +121,13 @@ namespace ToDoApp.Repository
                    Deadline = (DateTime)task.Element("Deadline"),
                    IsCompleted = (bool)task.Element("IsCompleted")
                })
-               .ToList());
-
-            tasks.AddRange(_document.Root
-               .Element("Tasks")
-               .Elements("Task")
-               .Where(task => (int)task.Element("CategoryId") == categoryId)
-               .Where(task => (bool)task.Element("IsCompleted") == true)
-               .Select(task => new TaskDto
-               {
-                   Id = (int)task.Element("Id"),
-                   Name = (string)task.Element("Name"),
-                   Deadline = (DateTime)task.Element("Deadline"),
-                   IsCompleted = (bool)task.Element("IsCompleted")
-               })
-               .ToList());
-
-            return tasks;
+               .OrderBy(o => o.IsCompleted)
+               .ToList();
+            }
+            else
+            {
+                return new List<TaskDto>();
+            }
         }
     }
 }

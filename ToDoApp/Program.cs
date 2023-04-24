@@ -1,13 +1,11 @@
 using ToDoApp.Services;
 using ToDoApp.Repository;
-using ToDoApp.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddSingleton<DapperContext>();
-builder.Services.AddSingleton<ChosenRepositoryService>();
+builder.Services.AddSingleton<DbContext>();
 builder.Services.AddScoped<CategoryRepositoryFactory>();
 builder.Services.AddScoped<TaskRepositoryFactory>();
 

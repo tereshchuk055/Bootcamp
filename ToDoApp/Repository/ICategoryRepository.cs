@@ -1,12 +1,12 @@
 ﻿using ToDoApp.Models;
 
-namespace ToDoApp.Interfaces
+namespace ToDoApp.Repository
 {
     public interface ICategoryRepository
     {
         List<CategoryDto> Get();
 
-        void Add(Models.CategoryDto category);
+        void Add(CategoryDto category);
 
         void Delete(int id);
     }

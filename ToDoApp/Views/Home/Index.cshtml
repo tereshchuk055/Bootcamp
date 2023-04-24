@@ -6,9 +6,7 @@
 <div class="container w-25 mt-3">
     <form asp-controller="Home" asp-action="ChangeRepository" class=" me-5">
         <div class="input-group mb-3">
-            <select class="form-select" asp-for="@(new ChangeRepositoryViewModel().StorageType)">
-                <option value="Sql">MS SQL Storage</option>
-                <option value="Xml">XML Storage</option>
+            <select class="form-select" asp-for="@(new ChangeRepositoryViewModel().StorageType)" asp-items="Model.Storages">
             </select>
             <button type="submit" class="btn btn-primary">Confirm</button>
         </div>

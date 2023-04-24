@@ -1,28 +1,25 @@
-﻿using ToDoApp.Interfaces;
-using ToDoApp.Repository;
-using ToDoApp.Enums;
+﻿using ToDoApp.Repository;
+using ToDoApp.Storage;
 
 namespace ToDoApp.Services
 {
     public class CategoryRepositoryFactory
     {
-        private DapperContext _context;
-        private ChosenRepositoryService _repository;
+        private DbContext _context;
 
         private readonly CategorySqlRepository _categorySqlRepository;
         private readonly CategoryXmlRepository _categoryXmlRepository;
 
-        public CategoryRepositoryFactory(DapperContext context, ChosenRepositoryService repository) 
+        public CategoryRepositoryFactory(DbContext context) 
         {
             _context = context;
-            _repository = repository;
             _categorySqlRepository = new CategorySqlRepository(_context);
             _categoryXmlRepository = new CategoryXmlRepository(_context);
         }
 
-        public ICategoryRepository GetRepository()
+        public ICategoryRepository GetRepository(StorageType storageType)
         {
-            if (_repository.StorageType == StorageType.Sql)
+            if (storageType == StorageType.Sql)
             {
                 return _categorySqlRepository;
             }

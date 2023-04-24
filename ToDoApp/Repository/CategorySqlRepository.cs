@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Threading.Tasks;
-using ToDoApp.Interfaces;
 using ToDoApp.Models;
 using ToDoApp.Services;
 
@@ -8,8 +7,8 @@ namespace ToDoApp.Repository
 {
     public class CategorySqlRepository : ICategoryRepository
     {
-        private readonly DapperContext _context;
-        public CategorySqlRepository(DapperContext context)
+        private readonly DbContext _context;
+        public CategorySqlRepository(DbContext context)
         {
             _context = context;
         }

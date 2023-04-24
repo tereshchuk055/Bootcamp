@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using ToDoApp.Models;
 
-namespace ToDoApp.Interfaces
+namespace ToDoApp.Repository
 {
     public interface ITaskRepository
     {
