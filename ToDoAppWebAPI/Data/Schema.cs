@@ -2,10 +2,10 @@
 {
     public class Schema : GraphQL.Types.Schema
     {
-        public Schema(IServiceProvider serviceProvider) : base(serviceProvider)
+        public Schema(Query query, Mutation mutation)
         {
-            Query = serviceProvider.GetRequiredService<Query>();
-            Mutation = serviceProvider.GetRequiredService<Mutation>();
+            Query = query;
+            Mutation = mutation;
         }
     }
 }

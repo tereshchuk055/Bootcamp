@@ -6,18 +6,31 @@ namespace ToDoAppWebAPI.Data
 {
     public class Query : ObjectGraphType
     {
-        public Query(RepositoryFactory factory)
+        public Query()
         {
-
             Field<ListGraphType<TaskType>>(Name = "tasks")
-                .Resolve(resolve => factory.GetTaskRepository().Get());
+                .Resolve(resolve =>
+                {
+                    var factory = resolve.RequestServices.GetRequiredService<RepositoryFactory>();
+                    return factory.GetTaskRepository().Get();
+                });
+
 
             Field<ListGraphType<TaskType>>(Name = "tasksByCategoryId")
                 .Argument<IntGraphType>("CategoryId")
-                .Resolve(resolve => factory.GetTaskRepository().GetByCategory(resolve.GetArgument<int>("CategoryId")));
+                .Resolve(resolve =>
+                {
+                    var factory = resolve.RequestServices.GetRequiredService<RepositoryFactory>();
+                    return factory.GetTaskRepository().GetByCategory(resolve.GetArgument<int>("CategoryId"));
+                });
+
 
             Field<ListGraphType<CategoryType>>(Name = "categories")
-                .Resolve(resolve => factory.GetCategoryRepository().Get());
+                .Resolve(resolve =>
+                {
+                    var factory = resolve.RequestServices.GetRequiredService<RepositoryFactory>();
+                    return factory.GetCategoryRepository().Get();
+                });
         }
     }
 }

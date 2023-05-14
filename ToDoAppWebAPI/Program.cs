@@ -7,8 +7,6 @@ global using ToDoApp.Storage;
 
 using ToDoAppWebAPI.Services;
 using ToDoApp.Services;
-using ToDoAppWebAPI.Data;
-using ToDoAppWebAPI.Types;
 using Schema = ToDoAppWebAPI.Data.Schema;
 
 
@@ -16,7 +14,18 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<DbContext>();
-builder.Services.AddTransient<RepositoryFactory>();
+builder.Services.AddScoped<RepositoryFactory>(provider =>
+{
+    var headers = provider?.GetRequiredService<IHttpContextAccessor>().HttpContext.Request.Headers ?? throw new Exception();
+    if (headers.TryGetValue("StorageType", out var value) && Enum.TryParse<StorageType>(value, out var type))
+    {
+        return new RepositoryFactory(provider.GetRequiredService<DbContext>(), type);
+    }
+    else
+    {
+        throw new Exception();
+    }
+});
 
 builder.Services.AddGraphQL((opt =>
 {

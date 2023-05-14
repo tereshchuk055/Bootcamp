@@ -6,12 +6,13 @@ namespace ToDoAppWebAPI.Data
 {
     public class Mutation : ObjectGraphType
     {
-        public Mutation(RepositoryFactory factory)
+        public Mutation()
         {
             Field<StringGraphType>("createTask")
                 .Argument<InputTaskType>("task")
                 .Resolve(resolve =>
                 {
+                    var factory = resolve.RequestServices.GetRequiredService<RepositoryFactory>();
                     var task = resolve.GetArgument<TaskDto>("task");
                     factory.GetTaskRepository().Add(task);
                     return "Task added successfully.";
@@ -21,6 +22,7 @@ namespace ToDoAppWebAPI.Data
                 .Argument<InputCategoryType>("category")
                 .Resolve(resolve =>
                 {
+                    var factory = resolve.RequestServices.GetRequiredService<RepositoryFactory>();
                     var category = resolve.GetArgument<CategoryDto>("category");
                     factory.GetCategoryRepository().Add(category);
                     return "Category added successfully.";
@@ -31,6 +33,7 @@ namespace ToDoAppWebAPI.Data
                 .Argument<int>("TaskId")
                 .Resolve(resolve =>
                 {
+                    var factory = resolve.RequestServices.GetRequiredService<RepositoryFactory>();
                     factory.GetTaskRepository().ChangeCompletedState(
                         resolve.GetArgument<int>("TaskId"),
                         resolve.GetArgument<bool>("IsCompleted"));
@@ -41,6 +44,7 @@ namespace ToDoAppWebAPI.Data
                 .Argument<int>("TaskId")
                 .Resolve(resolve =>
                 {
+                    var factory = resolve.RequestServices.GetRequiredService<RepositoryFactory>();
                     factory.GetTaskRepository().Delete(resolve.GetArgument<int>("TaskId"));
                     return "Task deleted successfully";
                 });
@@ -49,6 +53,7 @@ namespace ToDoAppWebAPI.Data
                 .Argument<int>("CategoryId")
                 .Resolve(resolve =>
                 {
+                    var factory = resolve.RequestServices.GetRequiredService<RepositoryFactory>();
                     factory.GetCategoryRepository().Delete(resolve.GetArgument<int>("CategoryId"));
                     return "Category deleted successfully";
                 });

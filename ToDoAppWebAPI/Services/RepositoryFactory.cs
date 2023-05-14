@@ -4,24 +4,18 @@ namespace ToDoAppWebAPI.Services
 {
     public class RepositoryFactory
     {
-        private DbContext _context;
+        private readonly DbContext _context;
 
-        private StorageType _storageType;
-        HttpContextAccessor _httpContextAccessor;
+        private readonly StorageType _storageType;
 
-        public RepositoryFactory(DbContext context, IHttpContextAccessor httpContextAccessor) 
+        public RepositoryFactory(DbContext context, StorageType type) 
         {
+            _storageType = type;
             _context = context;
-            _httpContextAccessor = (HttpContextAccessor)httpContextAccessor;
         }
         
         public ITaskRepository GetTaskRepository() 
         {
-            if (!Enum.TryParse(_httpContextAccessor?.HttpContext?.Request.Headers["StorageType"], out _storageType))
-            {
-                _storageType = StorageType.Sql;
-            }
-
             if (_storageType == StorageType.Sql)
 
                 return new TaskSqlRepository(_context);
@@ -32,11 +26,6 @@ namespace ToDoAppWebAPI.Services
         
         public ICategoryRepository GetCategoryRepository() 
         {
-            if (!Enum.TryParse(_httpContextAccessor?.HttpContext?.Request.Headers["StorageType"], out _storageType))
-            {
-                _storageType = StorageType.Sql;
-            }
-
             if (_storageType == StorageType.Sql)
 
                 return new CategorySqlRepository(_context);
