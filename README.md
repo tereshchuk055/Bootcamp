@@ -1,1 +1,1 @@
-## GraphQL API project is located in ToDoAppWebAPI Folder
+## React-Redux TodoApp completed
