@@ -6,26 +6,16 @@ import './style/App.css';
 
 function App() {
 
-  let items = useCurrentSelector((state) => state.reducer.items);
+  let todos = useCurrentSelector((state) => state.reducer.todos);
+  let categories = Object.fromEntries(useCurrentSelector((state) => state.reducer.categories).map(item => [item.id, item.name]));
   
-  items = [...items].sort((a, b) => {
-    if (a.checked && !b.checked) {
-      return 1;
-    }
-    if (!a.checked && b.checked) {
-      return -1;
-    }
-    return 0;
-  });
+  todos = [...todos].sort((a, b) => a.category - b.category);
 
   return (
-    <div className="App">
-      <Box component="div" display="flex" flexDirection="column" alignItems="flex-start">
-        <Panel/>
-        <TodoList todoList={items}/>
+      <Box className="App"component="div" display="flex" flexDirection="column" alignItems="flex-start">
+        <Panel categories={categories}/>
+        <TodoList todoList={todos} categories={categories}/>
       </Box>
-
-    </div>
   );
 }
 

@@ -1,31 +1,38 @@
-import { getActiveElement } from "@testing-library/user-event/dist/utils";
-import { ITodoItem } from "../types/type"
+import { Category, Todo } from "../types/type"
 
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-const initialState: { items: ITodoItem[] } = {
-    items: []
+const initialState: { todos: Todo[], categories: Category[] } = {
+    todos: [],
+    categories: []
 }
 
 
 export const TodoItemSlice = createSlice({
-    name: "items",
+    name: "todoList",
     initialState,
     reducers: {
-        addItem: (state, action: PayloadAction<ITodoItem>) => {
-            state.items.push(action.payload);
+        addTodo: (state, action: PayloadAction<Todo>) => {
+            state.todos.push(action.payload);
+        },
+        addCategory: (state, action: PayloadAction<Category>) => {
+            state.categories.push(action.payload);
         },
         changeCompletedState: (state, action: PayloadAction<number>) => {
-            let item = state.items.find(i => i.key === action.payload);
+            let item = state.todos.find(i => i.id === action.payload);
             if (item)
                 item.checked = !item.checked;
         },
-        deleteItem: (state, action: PayloadAction<number>) => {
-            state.items = state.items.filter(obj => obj.key !== action.payload);
+        deleteTodo: (state, action: PayloadAction<number>) => {
+            state.todos = state.todos.filter(obj => obj.id !== action.payload);
+        },
+        deleteCategory: (state, action: PayloadAction<number>) => {
+            state.categories = state.categories.filter(obj => obj.id !== action.payload);
+            state.todos = state.todos.filter(obj => obj.category !== action.payload);
         }
     },
 });
 
-export const { addItem, changeCompletedState, deleteItem } = TodoItemSlice.actions;
+export const { addTodo, addCategory, changeCompletedState, deleteTodo, deleteCategory } = TodoItemSlice.actions;
 export default TodoItemSlice.reducer;
 

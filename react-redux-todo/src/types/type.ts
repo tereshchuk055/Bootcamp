@@ -1,24 +1,31 @@
 import { format } from 'date-fns';
 import { useSelector, TypedUseSelectorHook } from 'react-redux';
-import type {RootState} from "../redux/store";
+import { RootState } from "../redux/store";
 import moment from 'moment';
 
-export interface ITodoItem {
-    key: number,
+export interface Todo {
+    id: number,
+    category: number
     name: string,
-    deadLine: string,
+    deadline: string,
     checked: boolean
 }
 
-export interface TodoListState {
-    items: ITodoItem[]
+export interface Category {
+    id: number,
+    name: string
 }
 
-export function serializeDate(date: Date) : string{
+export interface TodoListState {
+    todos: Todo[],
+    categories: Category[]
+}
+
+export function serializeDate(date: Date): string {
     return format(date, 'dd.MM.yyyy HH:mm');
 }
 
-export function deserializeDate (serializedDate: string) : Date{
+export function deserializeDate(serializedDate: string): Date {
     const date = moment(serializedDate, 'DD.MM.YYYY HH:mm').toDate();
     return date
 }

@@ -1,5 +1,5 @@
-import type { ITodoItem } from "./types/type";
+import { Category, Todo } from "./types/type";
 
-export function GetNextId(items: ITodoItem[]):number{
-    return items.reduce((max, obj) => (obj.key > max ? obj.key : max), 0) + 1;
+export function GetNextId<T extends Todo | Category>(items: T[]):number{
+    return items.reduce((max, obj) => (obj.id > max ? obj.id : max), 0) + 1;
 }
