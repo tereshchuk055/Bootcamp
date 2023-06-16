@@ -24,8 +24,7 @@ namespace ToDoApp.Repository
             _document = XDocument.Load(_storagePath);
             _tasks = _document.Root?.Element("Tasks")?.Elements("Task") ?? Enumerable.Empty<XElement>();
             int nextId = 0;
-
-            if (_tasks.Any() && !int.TryParse(_tasks.Last<XElement>().FirstNode?.ToString(), out nextId))
+            if (_tasks.Any() && !int.TryParse((_tasks.Last<XElement>().FirstNode as XElement).Value, out nextId))
             {
                 nextId = 0;
             }
@@ -93,7 +92,8 @@ namespace ToDoApp.Repository
                         Id = (int)task.Element("Id"),
                         Name = (string)task.Element("Name"),
                         Deadline = (DateTime)task.Element("Deadline"),
-                        IsCompleted = (bool)task.Element("IsCompleted")
+                        IsCompleted = (bool)task.Element("IsCompleted"),
+                        CategoryId = (int)task.Element("CategoryId")
                     })
                     .OrderBy(o => o.IsCompleted)
                     .ToList();

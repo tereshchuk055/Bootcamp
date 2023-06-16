@@ -1,6 +1,6 @@
-﻿using System.Threading.Tasks;
-using ToDoAppWebAPI.Services;
+﻿using ToDoAppWebAPI.Services;
 using ToDoAppWebAPI.Types;
+using System.Text.Json;
 
 namespace ToDoAppWebAPI.Data
 {
@@ -15,7 +15,7 @@ namespace ToDoAppWebAPI.Data
                     var factory = resolve.RequestServices.GetRequiredService<RepositoryFactory>();
                     var task = resolve.GetArgument<TaskDto>("task");
                     factory.GetTaskRepository().Add(task);
-                    return "Task added successfully.";
+                    return JsonSerializer.Serialize(true);
                 });
 
             Field<StringGraphType>("createCategory")
@@ -25,7 +25,7 @@ namespace ToDoAppWebAPI.Data
                     var factory = resolve.RequestServices.GetRequiredService<RepositoryFactory>();
                     var category = resolve.GetArgument<CategoryDto>("category");
                     factory.GetCategoryRepository().Add(category);
-                    return "Category added successfully.";
+                    return JsonSerializer.Serialize(true);
                 });
 
             Field<StringGraphType>("changeCompletedState")
@@ -37,7 +37,7 @@ namespace ToDoAppWebAPI.Data
                     factory.GetTaskRepository().ChangeCompletedState(
                         resolve.GetArgument<int>("TaskId"),
                         resolve.GetArgument<bool>("IsCompleted"));
-                    return "State changed successfully.";
+                    return JsonSerializer.Serialize(true);
                 });
 
             Field<StringGraphType>("deleteTask")
@@ -46,7 +46,7 @@ namespace ToDoAppWebAPI.Data
                 {
                     var factory = resolve.RequestServices.GetRequiredService<RepositoryFactory>();
                     factory.GetTaskRepository().Delete(resolve.GetArgument<int>("TaskId"));
-                    return "Task deleted successfully";
+                    return JsonSerializer.Serialize(true);
                 });
 
             Field<StringGraphType>("deleteCategory")
@@ -55,7 +55,7 @@ namespace ToDoAppWebAPI.Data
                 {
                     var factory = resolve.RequestServices.GetRequiredService<RepositoryFactory>();
                     factory.GetCategoryRepository().Delete(resolve.GetArgument<int>("CategoryId"));
-                    return "Category deleted successfully";
+                    return JsonSerializer.Serialize(true);
                 });
         }
     }

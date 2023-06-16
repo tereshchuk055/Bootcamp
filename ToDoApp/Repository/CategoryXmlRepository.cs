@@ -26,7 +26,7 @@ namespace ToDoApp.Repository
             _categories = _document.Root?.Element("Categories")?.Elements("Category") ?? Enumerable.Empty<XElement>();
             int nextId = 0;
 
-            if (_categories.Any() && !int.TryParse(_categories.Last<XElement>().FirstNode?.ToString(), out nextId))
+            if (_categories.Any() && !int.TryParse((_categories.Last<XElement>().FirstNode as XElement).Value, out nextId))
             {
                 nextId = 0;
             }

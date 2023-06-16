@@ -4,22 +4,19 @@ import { DateTimePicker } from '@mui/x-date-pickers';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 import Select, { SelectChangeEvent } from '@mui/material/Select';
-import { Category, Todo, serializeDate } from '../../types/type'
+import { Category, Todo } from '../../types/type'
 import { useDispatch } from "react-redux"
-import { addTodo, addCategory } from "../../redux/reducer";
-import { useCurrentSelector } from '../../types/type';
-import { GetNextId } from "../../helpers";
+import { useCurrentSelector, GetNextId } from '../../helpers';
+import { setStorage } from "../../redux/reducer";
 
 interface PanelProperties {
     categories: Record<number, string>
 }
 
-
-
 export const Panel: React.FC<PanelProperties> = ({ categories }) => {
 
-    let DEFAULT_TODO = { name: '', deadLine: new Date(), category: NaN};
-    const DEFAULT_CATEGORY = {name: ''};
+    let DEFAULT_TODO = { name: '', deadLine: new Date(), category: NaN };
+    const DEFAULT_CATEGORY = { name: '' };
 
     const dispatch = useDispatch();
     const reduxState = useCurrentSelector(state => state);
@@ -50,13 +47,13 @@ export const Panel: React.FC<PanelProperties> = ({ categories }) => {
         if (todo.name !== '' && todo.category != -1) {
             let newItem: Todo = {
                 id: GetNextId(reduxState.reducer.todos),
-                category: todo.category,
+                categoryId: todo.category,
                 name: todo.name,
-                deadline: serializeDate(todo.deadLine),
-                checked: false
+                deadline: todo.deadLine.toISOString(),
+                isCompleted: false
             }
-            dispatch(addTodo(newItem as Todo))
-            DEFAULT_TODO.category = newItem.category;
+            dispatch({ type: 'ADD_TODO', payload: newItem })
+            DEFAULT_TODO.category = newItem.categoryId;
             setTodo(DEFAULT_TODO);
         }
     }
@@ -66,10 +63,17 @@ export const Panel: React.FC<PanelProperties> = ({ categories }) => {
             id: GetNextId(reduxState.reducer.categories),
             name: category.name,
         }
-        dispatch(addCategory(newCategory as Category))
+        dispatch({ type: 'ADD_CATEGORY', payload: newCategory })
         setCategory(DEFAULT_CATEGORY);
     }
-    
+
+    const HandleChangeStorageCLick = () => {
+        dispatch(setStorage(StorageType))
+        dispatch({ type: 'GET_CATEGORIES' })
+    }
+
+    const StorageType = reduxState.reducer.storage == 'Sql' ? 'Xml' : 'Sql';
+
     return (
         <Paper sx={{ width: '90%', padding: "10px 0", background: "white", margin: '10px auto' }} elevation={4} >
             <Box component="div" display="flex" flexDirection="row" justifyContent="space-around">
@@ -84,7 +88,7 @@ export const Panel: React.FC<PanelProperties> = ({ categories }) => {
                     <Box sx={{ minWidth: 150, marginTop: 1 }}>
                         <FormControl fullWidth>
                             <InputLabel id="select-label">Category</InputLabel>
-                            <Select labelId="select-label" label="Category" autoWidth onChange={HandleSelectChange} value={ Number.isNaN(todo.category) ? undefined : todo.category.toString()}>
+                            <Select labelId="select-label" label="Category" autoWidth onChange={HandleSelectChange} value={Number.isNaN(todo.category) ? undefined : todo.category.toString()}>
                                 {Object.entries(categories).map(([key, value]) => (
                                     <MenuItem value={key} key={key}>{value}</MenuItem>
                                 ))}
@@ -97,6 +101,10 @@ export const Panel: React.FC<PanelProperties> = ({ categories }) => {
                     </LocalizationProvider>
 
                     <Button variant="contained" sx={{ margin: 1 }} onClick={HandleNewTodoCLick}>Add Task</Button>
+                </Box>
+
+                <Box sx={{ borderRadius: 2 }} component="div" display="flex" flexDirection="row" justifyContent="center">
+                    <Button variant="contained" sx={{ margin: 1 }} color='success' onClick={HandleChangeStorageCLick}>Change to {StorageType}</Button>
                 </Box>
             </Box>
         </Paper>

@@ -14,10 +14,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSingleton<DbContext>();
-builder.Services.AddScoped<RepositoryFactory>(provider =>
+builder.Services.AddTransient<RepositoryFactory>(provider =>
 {
     var headers = provider?.GetRequiredService<IHttpContextAccessor>().HttpContext.Request.Headers ?? throw new Exception();
-    if (headers.TryGetValue("StorageType", out var value) && Enum.TryParse<StorageType>(value, out var type))
+    if (headers.TryGetValue("Storage-Type", out var value) && Enum.TryParse<StorageType>(value, out var type))
     {
         return new RepositoryFactory(provider.GetRequiredService<DbContext>(), type);
     }
@@ -25,6 +25,16 @@ builder.Services.AddScoped<RepositoryFactory>(provider =>
     {
         throw new Exception();
     }
+});
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: "MyAllowSpecificOrigins",
+        policy =>
+        {
+            policy.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader();
+        });
 });
 
 builder.Services.AddGraphQL((opt =>
@@ -36,6 +46,7 @@ builder.Services.AddGraphQL((opt =>
 
 var app = builder.Build();
 
+app.UseCors("MyAllowSpecificOrigins");
 app.UseGraphQL<Schema>();
 app.UseGraphQLAltair();
 app.Run();
